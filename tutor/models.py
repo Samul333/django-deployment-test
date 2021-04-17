@@ -109,8 +109,7 @@ class Sessions(models.Model):
     session_days = models.IntegerField(default=0)
     is_approved = models.BooleanField(default=False)
 
-    def __str__(self):
-        return self.id
+    
 
     
 class Bill(models.Model):
