@@ -63,12 +63,15 @@ class SubjectSerializer(serializers.ModelSerializer):
     tutor_email = serializers.SerializerMethodField('get_tutor_email')
     tutor_first_name = serializers.SerializerMethodField('get_tutor_first_name')
     tutor_last_name = serializers.SerializerMethodField('get_tutor_last_name')
+    tutor_academic_level = serializers.SerializerMethodField('get_tutor_academic_level')
     def get_tutor_email(self, subject_object):
         return getattr(subject_object,'tutor').email
     def get_tutor_first_name(self, subject_object):
         return getattr(subject_object,'tutor').first_name
     def get_tutor_last_name(self, subject_object):
         return getattr(subject_object,'tutor').last_name
+    def get_tutor_academic_level(self, subject_object):
+        return getattr(subject_object,'tutor').academicleveltoteach  
     class Meta:
         model = Subject
         fields = "__all__"
