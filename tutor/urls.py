@@ -1,5 +1,5 @@
 from django.urls import path 
-from .views import RegisterView,LoginAPIView,VerifyEmail,UserListView,SubjectAPIView,SubjectSearchAPIView,SearchTutor,TutorDetails,RatingDetails,DeleteSubject,SessionAPIView,SessionAPIApprovedView
+from .views import RegisterView,LoginAPIView,VerifyEmail,UserListView,SubjectAPIView,SubjectSearchAPIView,SearchTutor,TutorDetails,RatingDetails,DeleteSubject,SessionAPIView,SessionAPIApprovedView,SessionAPIStudentApprovedView, UpdateApprove
 
 urlpatterns= [
     path('register/', RegisterView.as_view(), name = "register"),
@@ -14,4 +14,7 @@ urlpatterns= [
     path('delete-subject/<int:pk>/',DeleteSubject, name='delete subject'),
     path('request-session/', SessionAPIView.as_view(),name="request session"),
     path('session-approve/',SessionAPIApprovedView.as_view(),name='approve session'),
+    path('session-approved/',SessionAPIStudentApprovedView.as_view(),name='approved session'),
+    path('approve-status/<int:pk>/',UpdateApprove,name='approve status'),
+
 ]

@@ -88,11 +88,15 @@ class RatingsSerializer(serializers.ModelSerializer):
 
 class SessionSerializer(serializers.ModelSerializer):
     student_name= serializers.SerializerMethodField('get_student_name')
+    student_lastname = serializers.SerializerMethodField('get_student_lastname')
     student_email = serializers.SerializerMethodField('get_student_email')
     def get_student_name(self, session_object):
         return getattr(session_object,'student').first_name
     def get_student_email(self, session_object):
         return getattr(session_object,'student').email
+    def get_student_lastname(self, session_object):
+        return getattr(session_object,'student').last_name
+    
     class Meta:
         model = Sessions
         fields='__all__'
