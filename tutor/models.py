@@ -101,12 +101,17 @@ class Ratings(models.Model):
 class Sessions(models.Model):
     student = models.ForeignKey(to=User,on_delete=models.PROTECT, related_name='student')
     subject = models.CharField(max_length=40)
-    tutor = models.ForeignKey(to=User, on_delete=models.PROTECT, related_name='tutro')
+    tutor = models.ForeignKey(to=User, on_delete=models.PROTECT, related_name='tutor')
     session_date = models.CharField(max_length=50)
     session_time = models.CharField(max_length=40)
-    message = models.CharField(max_length=100, blank=True)
+    message = models.CharField(max_length=100, default="")
     session_duration = models.IntegerField(default=0)
+    session_days = models.IntegerField(default=0)
     is_approved = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.id
+
     
 class Bill(models.Model):
     Payment_type=models.CharField(max_length=30)

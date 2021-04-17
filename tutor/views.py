@@ -27,7 +27,7 @@ class RegisterView(generics.GenericAPIView):
         serializer = RegisterSerializer(data = user)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        import ipdb;ipdb.set_trace() 
+        
         user_data = serializer.data
         user = User.objects.get(email = user_data['email'])
         
@@ -105,6 +105,7 @@ class SubjectAPIView(generics.RetrieveAPIView):
         request.data['tutor'] = request.user.id
         serializer = SubjectSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        
         serializer.save()
         return Response(serializer.data)
 
@@ -122,13 +123,13 @@ class SubjectAPIView(generics.RetrieveAPIView):
 
 class SessionAPIView(generics.RetrieveAPIView):
     serializer_class = SessionSerializer
-    queryset  = Subject.objects.all()
+    queryset  = Sessions.objects.all()
     permission_classes = [permissions.IsAuthenticated,]
     lookup_field ="id"
     def post(self,request):
         request.data['student'] = request.user.id 
         serializer = SessionSerializer(data=request.data)
-        import ipdb; ipdb.set_trace()
+        import ipdb;ipdb.set_trace() 
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
@@ -137,18 +138,31 @@ class SessionAPIView(generics.RetrieveAPIView):
         id = request.user.id
         sessions = Sessions.objects.all().filter(tutor=id).filter(is_approved=False)
         serializer = SessionSerializer(sessions,many=True)
-        import ipdb; ipdb.set_trace()
+        
         return Response(serializer.data)
 
 class SessionAPIApprovedView(generics.RetrieveAPIView):
     serializer_class = SessionSerializer
-    queryset  = Subject.objects.all()
+    queryset  = Sessions.objects.all()
     permission_classes = [permissions.IsAuthenticated,]
     lookup_field ="id"
     def get(self,request):
         id = request.user.id
         
         sessions = Sessions.objects.all().filter(tutor=id).filter(is_approved=True)
+        serializer = SessionSerializer(sessions,many=True)
+      
+        return Response(serializer.data)
+
+class SessionAPIStudentApprovedView(generics.RetrieveAPIView):
+    serializer_class = SessionSerializer
+    queryset  = Sessions.objects.all()
+    permission_classes = [permissions.IsAuthenticated,]
+    lookup_field ="id"
+    def get(self,request):
+        id = request.user.id
+
+        sessions = Sessions.objects.all().filter(student=id).filter(is_approved=True)
         serializer = SessionSerializer(sessions,many=True)
       
         return Response(serializer.data)
@@ -194,6 +208,14 @@ def RatingDetails(request,pk):
 def DeleteSubject(request,pk):
     if(request.method == 'DELETE'):
         subject = Subject.objects.get(id=pk)
-        import ipdb;ipdb.set_trace()
         subject.delete()
         return Response('Deletion Sucessful')
+
+@api_view(['PATCH'])
+def UpdateApprove(request,pk):
+    if(request.method == 'PATCH'):
+        sessions = Sessions.objects.get(id=pk)
+        sessions.is_approved=True
+        sessions.save()
+        return Response('Approve Sucessful')
+
