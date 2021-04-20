@@ -103,7 +103,7 @@ class Sessions(models.Model):
     subject = models.CharField(max_length=40)
     tutor = models.ForeignKey(to=User, on_delete=models.PROTECT, related_name='tutor')
     session_date = models.CharField(max_length=50)
-    session_time = models.CharField(max_length=40)
+    session_enddate = models.CharField(max_length=40)
     message = models.CharField(max_length=100, default="")
     session_duration = models.IntegerField(default=0)
     session_days = models.IntegerField(default=0)
