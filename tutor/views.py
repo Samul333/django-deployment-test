@@ -129,7 +129,7 @@ class SessionAPIView(generics.RetrieveAPIView):
     def post(self,request):
         request.data['student'] = request.user.id 
         serializer = SessionSerializer(data=request.data)
-        import ipdb;ipdb.set_trace() 
+        import ipdb; ipdb.set_trace();
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
@@ -211,6 +211,16 @@ def DeleteSubject(request,pk):
         subject.delete()
         return Response('Deletion Sucessful')
 
+@api_view(['DELETE'])
+def DeleteSessionRequest(request,pk):
+    if(request.method == 'DELETE'):
+        ssessions = Sessions.objects.get(id=pk)
+        
+        ssessions.delete()
+        return Response('Deletion Sucessful')
+
+
+
 @api_view(['PATCH'])
 def UpdateApprove(request,pk):
     if(request.method == 'PATCH'):
@@ -230,7 +240,6 @@ class BillView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
 
         serializer.save()
-        import ipdb; ipdb.set_trace()
         return Response(serializer.data)
 
     def get(self,request):
