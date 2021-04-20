@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from rest_framework import generics
-from .serializers import RegisterSerializer,LoginSerializer,SubjectSerializer,TutorSerializer,UpdateSerializer,RatingsSerializer,SessionSerializer
+from .serializers import RegisterSerializer,LoginSerializer,SubjectSerializer,TutorSerializer,UpdateSerializer,RatingsSerializer,SessionSerializer,BillSerializer
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import User,Subject,Ratings,Sessions
+from .models import User,Subject,Ratings,Sessions,Bill
 from .utils import Util
 from django.contrib.sites.shortcuts import get_current_site
 from rest_framework.parsers import JSONParser
@@ -219,3 +219,65 @@ def UpdateApprove(request,pk):
         sessions.save()
         return Response('Approve Sucessful')
 
+
+class BillView(generics.GenericAPIView):
+    queryset  = Bill.objects.all()
+    permission_classes = [permissions.IsAuthenticated,]
+    lookup_field ="id"
+    def post(self,request):
+        # request.data['tutor'] = request.user.id
+        serializer = BillSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        serializer.save()
+        import ipdb; ipdb.set_trace()
+        return Response(serializer.data)
+
+    def get(self,request):
+      
+        bills = Bill.objects.all()
+        
+        serializer = BillSerializer(bills,many=True)
+        data = filter(lambda x:x['tutor']==request.user.id, serializer.data)
+        
+        return Response(data)
+
+class BillSView(generics.GenericAPIView):
+    queryset  = Bill.objects.all()
+    permission_classes = [permissions.IsAuthenticated,]
+    lookup_field ="id"
+    def post(self,request):
+        # request.data['tutor'] = request.user.id
+        serializer = BillSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        serializer.save()
+        import ipdb; ipdb.set_trace()
+        return Response(serializer.data)
+
+    def get(self,request):
+      
+        bills = Bill.objects.all()
+        
+        serializer = BillSerializer(bills,many=True)
+        data = filter(lambda x:x['student']==request.user.id, serializer.data)
+        
+        return Response(data)
+
+
+@api_view(['GET'])
+def BillDetails(request,pk):
+    
+    if(request.method =='GET'):
+        session_id = pk
+        bill = Bill.objects.get(seession=pk)
+        serializer = BillSerializer(bill)
+        return Response(serializer.data)
+
+@api_view(['PATCH'])
+def UpdateBillPaidStatus(request,pk):
+    if(request.method == 'PATCH'):
+        bills = Bill.objects.get(id=pk)
+        bills.is_paid=True
+        bills.save()
+        return Response('Status approve Sucessful')

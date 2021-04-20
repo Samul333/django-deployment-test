@@ -116,3 +116,6 @@ class Bill(models.Model):
     Payment_type=models.CharField(max_length=30)
     session_cost=models.IntegerField(default=0)
     seession = models.ForeignKey(to=Sessions, on_delete=models.CASCADE)
+    is_paid = models.BooleanField(default=False)
+    bill_date = models.CharField(max_length=50,default="")
+ 

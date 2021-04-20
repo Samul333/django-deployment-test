@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User,Subject,Ratings,Sessions
+from .models import User,Subject,Ratings,Sessions,Bill
 from django.contrib import auth
 from rest_framework.exceptions import AuthenticationFailed
 
@@ -93,13 +93,37 @@ class SessionSerializer(serializers.ModelSerializer):
     student_name= serializers.SerializerMethodField('get_student_name')
     student_lastname = serializers.SerializerMethodField('get_student_lastname')
     student_email = serializers.SerializerMethodField('get_student_email')
+    tutor_chargePerHour=serializers.SerializerMethodField('get_tutor_chargePerHour')
+    tutor_name= serializers.SerializerMethodField('get_tutor_name')
+    tutor_lastname = serializers.SerializerMethodField('get_tutor_lastname')
     def get_student_name(self, session_object):
         return getattr(session_object,'student').first_name
     def get_student_email(self, session_object):
         return getattr(session_object,'student').email
     def get_student_lastname(self, session_object):
         return getattr(session_object,'student').last_name
+    def get_tutor_name(self, session_object):
+        return getattr(session_object,'tutor').first_name
+    def get_tutor_lastname(self, session_object):
+        return getattr(session_object,'tutor').last_name
+
+    def get_tutor_chargePerHour(self, session_object):
+        return getattr(session_object,'tutor').chargePerHour
     
     class Meta:
         model = Sessions
+        fields='__all__'
+
+class BillSerializer(serializers.ModelSerializer):
+    student= serializers.SerializerMethodField('get_student')
+    tutor = serializers.SerializerMethodField('get_tutor')
+    def get_tutor(self, bill_object):
+        tutor=getattr(bill_object,'seession').tutor
+    
+        return tutor.id
+    def get_student(self, bill_object):
+        student=getattr(bill_object,'seession').student
+        return student.id
+    class Meta:
+        model = Bill
         fields='__all__'
