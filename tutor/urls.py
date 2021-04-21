@@ -1,5 +1,5 @@
 from django.urls import path 
-from .views import RegisterView,LoginAPIView,VerifyEmail,UserListView,SubjectAPIView,SubjectSearchAPIView,SearchTutor,TutorDetails,RatingDetails,DeleteSubject,SessionAPIView,SessionAPIApprovedView,SessionAPIStudentApprovedView, UpdateApprove, BillView,BillSView,BillDetails,UpdateBillPaidStatus,DeleteSessionRequest
+from .views import RegisterView,LoginAPIView,VerifyEmail,UserListView,SubjectAPIView,SubjectSearchAPIView,SearchTutor,TutorDetails,RatingDetails,DeleteSubject,SessionAPIView,SessionAPIApprovedView,SessionAPIStudentApprovedView, UpdateApprove, BillView,BillSView,BillDetails,UpdateBillPaidStatus,DeleteSessionRequest,PasswordTokenCheckAPI,RequestPasswordResetEmail,SetNewPasswordAPIView
 
 urlpatterns= [
     path('register/', RegisterView.as_view(), name = "register"),
@@ -21,5 +21,7 @@ urlpatterns= [
     path('studentclassbills/<int:pk>/',BillDetails,name='studentclassbills'),
     path('UpdateBillPaidStatus/<int:pk>/',UpdateBillPaidStatus,name='UpdateBillPaidStatus'),
     path('deleteSessionRequest/<int:pk>/',DeleteSessionRequest,name='deletesessionrequest'),
-
+    path('password-rest/<uidb64>/<token>/', PasswordTokenCheckAPI.as_view(), name='password-reset-confirm' ),
+    path('request-reset-email/',RequestPasswordResetEmail.as_view(), name='password-reset'),
+    path('password-reset-complete/',SetNewPasswordAPIView.as_view(),name='password-reset-completed')
 ]

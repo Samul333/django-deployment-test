@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework import generics
-from .serializers import RegisterSerializer,LoginSerializer,SubjectSerializer,TutorSerializer,UpdateSerializer,RatingsSerializer,SessionSerializer,BillSerializer
+from .serializers import RegisterSerializer,LoginSerializer,SubjectSerializer,TutorSerializer,UpdateSerializer,RatingsSerializer,SessionSerializer,BillSerializer,RequestPasswordEmailSerializer,SetNewPasswordSerialzier
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User,Subject,Ratings,Sessions,Bill
@@ -18,7 +18,12 @@ from rest_framework import permissions
 from .permissions import IsOwner
 from django_filters.rest_framework import DjangoFilterBackend
 from django.utils.dateparse import parse_date
-
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.encoding import smart_str, force_str,smart_bytes, DjangoUnicodeDecodeError
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode    
+from django.contrib.sites.shortcuts import get_current_site
+from django.urls import reverse 
+from .utils import Util
 
 class RegisterView(generics.GenericAPIView):
     def post(self, request):
@@ -290,3 +295,50 @@ def UpdateBillPaidStatus(request,pk):
         bills.is_paid=True
         bills.save()
         return Response('Status approve Sucessful')
+
+
+
+class RequestPasswordResetEmail(generics.GenericAPIView):
+    serializer_class = RequestPasswordEmailSerializer
+    def post(self,request):
+        serializer = self.serializer_class(data = request.data)
+
+        email = request.data['email']
+
+        if User.objects.filter(email=email).exists():
+            user = User.objects.get(email=email)  
+            uidb64 = urlsafe_base64_encode(smart_bytes(user.id))
+            token = PasswordResetTokenGenerator().make_token(user)
+            import ipdb; ipdb.set_trace()
+            current_site = get_current_site(request=request).domain
+
+            
+            relativeLink = reverse('password-reset-confirm', kwargs={'uidb64':uidb64,'token':token})
+            absurl = 'http://'+ current_site+relativeLink
+            email_body = 'Hi ' + user.username + 'Use the link to reset your password \n'+absurl + '\n Token='+token+'\n M = '+uidb64
+            data = {'to_email':user.email,'email_body':email_body, 'email_subject':'Reset your password email'}
+        
+            Util.send_email(data)
+    
+            return Response({'sucess':'The link has been sent'})
+        return Response({'failed':'The user doesnt exist'})
+
+class PasswordTokenCheckAPI(generics.GenericAPIView):
+    def get(self,request,uidb64,token):
+        
+        try:
+            id = smart_str(urlsafe_base64_decode(uidb64)) 
+            user = User.objects.get(id=id)
+
+            import ipdb; ipdb.set_trace()
+        except :
+            pass
+
+
+class SetNewPasswordAPIView(generics.GenericAPIView):
+    serializer_class = SetNewPasswordSerialzier
+
+    def patch(self,request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        return Response({'sucess':True})
