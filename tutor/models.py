@@ -117,5 +117,11 @@ class Bill(models.Model):
     session_cost=models.IntegerField(default=0)
     seession = models.ForeignKey(to=Sessions, on_delete=models.CASCADE)
     is_paid = models.BooleanField(default=False)
-    bill_date = models.CharField(max_length=50,default="")
- 
+    bill_date = models.DateTimeField(auto_now_add=True)
+
+class MyFile(models.Model):
+    file = models.FileField(blank=False, null=False)
+    session = models.ForeignKey(to=Sessions,on_delete=models.CASCADE,related_name='session')
+    message=models.CharField(max_length=255,default='')
+    description = models.CharField(max_length=255)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
