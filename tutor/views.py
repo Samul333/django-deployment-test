@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from rest_framework import generics
-from .serializers import RegisterSerializer,LoginSerializer,SubjectSerializer,TutorSerializer,UpdateSerializer,RatingsSerializer,SessionSerializer,BillSerializer,RequestPasswordEmailSerializer,SetNewPasswordSerialzier,MyFileSerializer
+from .serializers import RegisterSerializer,LoginSerializer,SubjectSerializer,TutorSerializer,UpdateSerializer,RatingsSerializer,SessionSerializer,BillSerializer,RequestPasswordEmailSerializer,SetNewPasswordSerialzier,MyFileSerializer,NotificationSerializer
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import User,Subject,Ratings,Sessions,Bill
+from .models import User,Subject,Ratings,Sessions,Bill,Notification
 from .utils import Util
 from django.contrib.sites.shortcuts import get_current_site
 from rest_framework.parsers import JSONParser
@@ -361,4 +361,24 @@ class MyFileView(APIView):
 						return Response(file_serializer.errors)
     
 
+
+class NotificationView(generics.GenericAPIView):
+    queryset  = Notification.objects.all()
+    permission_classes = [permissions.IsAuthenticated,]
+    lookup_field ="id"
+
+    def get(self,request):
+        id = request.user.id
+
+        notifications= Notification.objects.all().filter(recepient=id)
+        serializer = NotificationSerializer(notifications,many=True)
+      
+        return Response(serializer.data)
+
+    def post(self,request):
+        serializer = NotificationSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        serializer.save()
+        return Response(serializer.data)
 

@@ -110,8 +110,6 @@ class Sessions(models.Model):
     is_approved = models.BooleanField(default=False)
 
     
-
-    
 class Bill(models.Model):
     Payment_type=models.CharField(max_length=30)
     session_cost=models.IntegerField(default=0)
@@ -125,3 +123,10 @@ class MyFile(models.Model):
     message=models.CharField(max_length=255,default='')
     description = models.CharField(max_length=255)
     uploaded_at = models.DateTimeField(auto_now_add=True)
+
+class Notification(models.Model):
+    recepient=models.ForeignKey(to=User,on_delete=models.CASCADE,related_name='User')
+    seession = models.ForeignKey(to=Sessions, on_delete=models.CASCADE)
+    notification = models.CharField(max_length=255,default='')
+    date_at = models.DateTimeField(auto_now_add=True)
+
