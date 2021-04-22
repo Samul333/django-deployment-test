@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User,Subject,Ratings,Sessions,Bill
+from .models import User,Subject,Ratings,Sessions,Bill,MyFile
 from django.contrib import auth
 from rest_framework.exceptions import AuthenticationFailed
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
@@ -163,6 +163,8 @@ class SetNewPasswordSerialzier(serializers.Serializer):
 
             id = force_str(urlsafe_base64_decode(uidb64))
             user = User.objects.get(id=id)
+            if not PasswordResetTokenGenerator().check_token(user,token):
+                raise AuthenticationFailed('The reset link is invalid')
 
             user.set_password(password)
             user.save()
@@ -171,3 +173,11 @@ class SetNewPasswordSerialzier(serializers.Serializer):
             raise AuthenticationFailed('Invalid token')
 
         return super().validate(attrs)
+
+
+
+class MyFileSerializer(serializers.ModelSerializer):
+    class Meta():
+
+        model = MyFile
+        fields = '__all__'
