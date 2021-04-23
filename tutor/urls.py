@@ -1,5 +1,5 @@
 from django.urls import path 
-from .views import RegisterView,LoginAPIView,VerifyEmail,UserListView,SubjectAPIView,SubjectSearchAPIView,SearchTutor,TutorDetails,RatingDetails,DeleteSubject,SessionAPIView,SessionAPIApprovedView,SessionAPIStudentApprovedView, UpdateApprove, BillView,BillSView,BillDetails,UpdateBillPaidStatus,DeleteSessionRequest,PasswordTokenCheckAPI,RequestPasswordResetEmail,SetNewPasswordAPIView,MyFileView
+from .views import RegisterView,LoginAPIView,VerifyEmail,UserListView,SubjectAPIView,SubjectSearchAPIView,SearchTutor,TutorDetails,RatingDetails,DeleteSubject,SessionAPIView,SessionAPIApprovedView,SessionAPIStudentApprovedView, UpdateApprove, BillView,BillSView,BillDetails,UpdateBillPaidStatus,DeleteSessionRequest,PasswordTokenCheckAPI,RequestPasswordResetEmail,SetNewPasswordAPIView,MyFileView,NotificationView
 
 urlpatterns= [
     path('register/', RegisterView.as_view(), name = "register"),
@@ -24,5 +24,6 @@ urlpatterns= [
     path('password-rest/<uidb64>/<token>/', PasswordTokenCheckAPI.as_view(), name='password-reset-confirm' ),
     path('request-reset-email/',RequestPasswordResetEmail.as_view(), name='password-reset'),
     path('password-reset-complete/',SetNewPasswordAPIView.as_view(),name='password-reset-completed'),
-    path('upload/',MyFileView.as_view(),name='upload-a-file')
+    path('upload/',MyFileView.as_view(),name='upload-a-file'),
+    path('notifications/',NotificationView.as_view(),name='notifications-user')
 ]
