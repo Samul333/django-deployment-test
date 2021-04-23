@@ -126,7 +126,7 @@ class MyFile(models.Model):
 
 class Notification(models.Model):
     recepient=models.ForeignKey(to=User,on_delete=models.CASCADE,related_name='User')
-    seession = models.ForeignKey(to=Sessions, on_delete=models.CASCADE)
-    notification = models.CharField(max_length=255,default='')
+    seession = models.ForeignKey(to=Sessions, on_delete=models.CASCADE,blank=True, null=True)
+    notification = models.CharField(max_length=255,)
     date_at = models.DateTimeField(auto_now_add=True)
 
