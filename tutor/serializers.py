@@ -170,7 +170,6 @@ class SetNewPasswordSerialzier(serializers.Serializer):
             
             user.set_password(password)
             user.save()
-            import ipdb; ipdb.set_trace()
             return (user)
         except Exception as e:
             raise AuthenticationFailed('Invalid token')

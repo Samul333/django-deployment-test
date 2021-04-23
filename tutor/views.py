@@ -3,7 +3,7 @@ from rest_framework import generics
 from .serializers import RegisterSerializer,LoginSerializer,SubjectSerializer,TutorSerializer,UpdateSerializer,RatingsSerializer,SessionSerializer,BillSerializer,RequestPasswordEmailSerializer,SetNewPasswordSerialzier,MyFileSerializer,NotificationSerializer
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import User,Subject,Ratings,Sessions,Bill,Notification
+from .models import User,Subject,Ratings,Sessions,Bill,Notification,MyFile
 from .utils import Util
 from django.contrib.sites.shortcuts import get_current_site
 from rest_framework.parsers import JSONParser
@@ -30,9 +30,9 @@ from rest_framework.views import APIView
 class RegisterView(generics.GenericAPIView):
     def post(self, request):
         user = request.data
-
         serializer = RegisterSerializer(data = user)
         serializer.is_valid(raise_exception=True)
+        
         serializer.save()
         
         user_data = serializer.data
@@ -110,6 +110,14 @@ class SubjectAPIView(generics.RetrieveAPIView):
      lookup_field ="id"
      def post(self,request):
         request.data['tutor'] = request.user.id
+        
+        subject_name = request.data['subject_name']
+        subject = Subject.objects.all().filter(subject_name=subject_name,id=request.user.id)
+        data = SubjectSerializer(data=subject,many=True)
+        data.is_valid()
+        import ipdb; ipdb.set_trace()
+        if len(data.data)!=0:
+            return Response('Already added')
         serializer = SubjectSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         
@@ -136,7 +144,6 @@ class SessionAPIView(generics.RetrieveAPIView):
     def post(self,request):
         request.data['student'] = request.user.id 
         serializer = SessionSerializer(data=request.data)
-        import ipdb; ipdb.set_trace();
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
@@ -268,7 +275,6 @@ class BillSView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
 
         serializer.save()
-        import ipdb; ipdb.set_trace()
         return Response(serializer.data)
 
     def get(self,request):
@@ -311,7 +317,6 @@ class RequestPasswordResetEmail(generics.GenericAPIView):
             user = User.objects.get(email=email)  
             uidb64 = urlsafe_base64_encode(smart_bytes(user.id))
             token = PasswordResetTokenGenerator().make_token(user)
-            import ipdb; ipdb.set_trace()
             current_site = get_current_site(request=request).domain
 
             
@@ -332,7 +337,6 @@ class PasswordTokenCheckAPI(generics.GenericAPIView):
             id = smart_str(urlsafe_base64_decode(uidb64)) 
             user = User.objects.get(id=id)
 
-            import ipdb; ipdb.set_trace()
         except :
             pass
 
@@ -359,7 +363,17 @@ class MyFileView(APIView):
 						return Response(file_serializer.data)
 				else:
 						return Response(file_serializer.errors)
-    
+
+
+class RetriveMyFile(generics.GenericAPIView):
+       def get(self,request,pk):
+
+            id = pk
+            files = MyFile.objects.all().filter(session=id)
+            serializer = MyFileSerializer(data=files,many=True)
+            serializer.is_valid()
+            return Response(serializer.data)
+
 
 
 class NotificationView(generics.GenericAPIView):
