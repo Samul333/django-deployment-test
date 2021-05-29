@@ -48,7 +48,7 @@ class RegisterView(generics.GenericAPIView):
         data = {'to_email':user.email,'email_body':email_body, 'email_subject':'Verify your email'}
       
         Util.send_email(data)
-        return Response(user_data)
+        return Response('User registered successfully. Please Check your email')
         
     def delete(self,request):
         json_data = request.body
@@ -78,7 +78,7 @@ class UserListView(generics.GenericAPIView):
         serializer = UpdateSerializer(user,data= request.data,partial=True)
         if serializer.is_valid():
             serializer.save()
-        return Response(serializer.data)
+        return Response('Profile edited successfully')
 
 class VerifyEmail(generics.GenericAPIView):
     def get(self,request):
@@ -115,14 +115,13 @@ class SubjectAPIView(generics.RetrieveAPIView):
         subject = Subject.objects.all().filter(subject_name=subject_name,id=request.user.id)
         data = SubjectSerializer(data=subject,many=True)
         data.is_valid()
-        import ipdb; ipdb.set_trace()
         if len(data.data)!=0:
             return Response('Already added')
         serializer = SubjectSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         
         serializer.save()
-        return Response(serializer.data)
+        return Response('The subject has been added successfully')
 
      def get(self,request):
         user_id = request.user.id
@@ -216,7 +215,7 @@ def RatingDetails(request,pk):
         serializer = RatingsSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(serializer.data)
+        return Response('Your rating has been registered! Thank you for using the application')
 
 @api_view(['DELETE'])
 def DeleteSubject(request,pk):
@@ -322,7 +321,7 @@ class RequestPasswordResetEmail(generics.GenericAPIView):
             
             relativeLink = reverse('password-reset-confirm', kwargs={'uidb64':uidb64,'token':token})
             absurl = 'http://'+ current_site+relativeLink
-            email_body = 'Hi ' + user.username + 'Use the link to reset your password \n'+absurl + '\n Token='+token+'\n M = '+uidb64
+            email_body = 'Hi ' + user.username + 'Use this token and pin in your application \n' + '\n Token='+token+'\n Pin = '+uidb64
             data = {'to_email':user.email,'email_body':email_body, 'email_subject':'Reset your password email'}
         
             Util.send_email(data)
@@ -347,7 +346,7 @@ class SetNewPasswordAPIView(generics.GenericAPIView):
     def patch(self,request):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-        return Response({'sucess':True})
+        return Response({'sucess':'Your password has been changed.'})
 
 class MyFileView(APIView):
 		# MultiPartParser AND FormParser
@@ -396,3 +395,8 @@ class NotificationView(generics.GenericAPIView):
         serializer.save()
         return Response(serializer.data)
 
+
+class HomePageView(generics.GenericAPIView):
+
+    def get(self,request):
+        return HttpResponse('The application is up and running')
